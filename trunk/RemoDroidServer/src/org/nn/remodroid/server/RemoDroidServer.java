@@ -136,37 +136,6 @@ public class RemoDroidServer extends Thread {
 
 	private void sendFindServerReply(InetAddress address) {
 		sendMessage(new FindServerResponseEvent(), address, SERVER_PORT);
-//		DatagramSocket socket = null;
-//		try {
-//			socket = new DatagramSocket();
-//			ObjectOutputStream os = null;
-//			try {
-//				ByteArrayOutputStream byteStream = new ByteArrayOutputStream(5000);
-//				os = new ObjectOutputStream(new BufferedOutputStream(byteStream));
-//				os.writeObject(new FindServerResponseEvent());
-//				os.flush();
-//		      
-//				byte[] buffer = byteStream.toByteArray();
-//				DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, SERVER_PORT);
-//				socket.send(packet);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			} finally {
-//				if (os != null) {
-//					try {
-//						os.close();
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//		} catch (SocketException e) {
-//			e.printStackTrace();
-//		} finally {
-//			if (socket != null) {
-//				socket.close();
-//			}
-//		}
 	}
 
 	public static void sendMessage(RemoteMessage message, InetAddress address, int serverPort) {

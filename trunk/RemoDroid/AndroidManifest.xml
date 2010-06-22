@@ -10,6 +10,9 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		
+		<activity android:name=".RemoDroidActivity" android:label="RemoDroid">
+		</activity>
 	</application>
 
 	<uses-permission android:name="android.permission.INTERNET" />

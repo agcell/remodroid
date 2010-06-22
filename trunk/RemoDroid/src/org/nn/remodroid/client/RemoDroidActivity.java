@@ -8,7 +8,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -30,7 +29,6 @@ import org.nn.remodroid.messages.RemoteMessage;
 import org.nn.remodroid.messages.TextEvent;
 import org.nn.remodroid.messages.VScrollEvent;
 import org.nn.remodroid.messages.ZoomEvent;
-import org.nn.remodroid.client.R;
 
 import android.app.Activity;
 import android.content.Context;
@@ -58,7 +56,6 @@ public class RemoDroidActivity extends Activity implements Runnable {
     
 	private static final String CLASSTAG = RemoDroidActivity.class.getSimpleName();
 	
-	private static final String SERVER_NAME = "192.168.0.101";
 	private static final int SERVER_PORT = 9000;
 	
 	private BlockingQueue<RemoteMessage> messages = new LinkedBlockingQueue<RemoteMessage>();
@@ -69,9 +66,14 @@ public class RemoDroidActivity extends Activity implements Runnable {
 	private Sensor sensor = null;
 	private GraphicsView view = null;
 	
+	private InetAddress serverAddress;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        serverAddress = (InetAddress) getIntent().getExtras().get(SelectServerActivity.SERVER_ADDRESS);
+        
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         
@@ -114,7 +116,6 @@ public class RemoDroidActivity extends Activity implements Runnable {
 	public void run() {
 		DatagramSocket socket = null;
 		try {
-			InetAddress address = InetAddress.getByName(SERVER_NAME);
 			socket = new DatagramSocket();
 			while (true) {
 		    	try {
@@ -131,7 +132,7 @@ public class RemoDroidActivity extends Activity implements Runnable {
 						os.flush();
 				      
 						byte[] buffer = byteStream.toByteArray();
-						DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, SERVER_PORT);
+						DatagramPacket packet = new DatagramPacket(buffer, buffer.length, serverAddress, SERVER_PORT);
 						socket.send(packet);
 					} catch (IOException e) {
 						Log.e(Constants.LOGTAG, " " + CLASSTAG + " IOException calling socket", e);
@@ -151,8 +152,6 @@ public class RemoDroidActivity extends Activity implements Runnable {
 			}
 		} catch (SocketException e) {
 			Log.e(Constants.LOGTAG, " " + CLASSTAG + " SocketException while creating socket", e);
-		} catch (UnknownHostException e) {
-			Log.e(Constants.LOGTAG, " " + CLASSTAG + " UnknownHostException " + SERVER_NAME, e);
 		} finally {
 			if (socket != null) {
 				socket.close();
