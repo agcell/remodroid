@@ -24,22 +24,28 @@ import org.nn.remodroid.server.RemoDroidServer;
 import org.nn.remodroid.client.R;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class SelectServerActivity extends Activity implements Runnable {
 
 	private static final String CLASSTAG = SelectServerActivity.class.getSimpleName();
 	
-	
+	public static final String SERVER_ADDRESS = "server_address";
 	
 	private Thread thread = null;
 	
+	private InetAddress serverAddress;
+	
 	private ListView myListView;
-	private final List<String> servers = Collections.synchronizedList(new ArrayList<String>());
-	private ArrayAdapter<String> serversAdapter;
+	private final List<ServerInfo> servers = Collections.synchronizedList(new ArrayList<ServerInfo>());
+	private ArrayAdapter<ServerInfo> serversAdapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +54,25 @@ public class SelectServerActivity extends Activity implements Runnable {
 		setContentView(R.layout.main);
 		
 		myListView = (ListView) findViewById(R.id.myListView);
-        serversAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, servers);
+        serversAdapter = new ArrayAdapter<ServerInfo>(this, android.R.layout.simple_list_item_1, servers);
         myListView.setAdapter(serversAdapter);
+        
+        myListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				ArrayAdapter<ServerInfo> serversAdapter = cast(parent.getAdapter());
+				ServerInfo serverInfo = serversAdapter.getItem(position);
+				Intent intent = new Intent(SelectServerActivity.this, RemoDroidActivity.class);
+				intent.putExtra(SERVER_ADDRESS, serverInfo.getAddress());
+				startActivity(intent);
+			}
+		});
         
         if (thread == null) {
 	        thread = new Thread(this);
 	        thread.start();
         }
-        
-        
 	}
 	
 	@Override
@@ -77,6 +93,10 @@ public class SelectServerActivity extends Activity implements Runnable {
 		
 		thread = null;
 		super.onPause();
+	}
+	
+	public InetAddress getServerAddress() {
+		return serverAddress;
 	}
 	
 	@Override
@@ -101,7 +121,7 @@ public class SelectServerActivity extends Activity implements Runnable {
 						if (message instanceof FindServerResponseEvent) {
 							Log.d(CLASSTAG, "# Message received: " + message.getClass().getSimpleName() + " " 
 									+ packet.getAddress().getHostName());
-							addServer(packet.getAddress().getHostName());
+							addServer(packet.getAddress().getHostName(), packet.getAddress());
 						}
 					}
 				} catch (SocketTimeoutException e) {
@@ -134,12 +154,12 @@ public class SelectServerActivity extends Activity implements Runnable {
 		}
 	}
 	
-	private void addServer(final String serverName) {
+	private void addServer(final String serverName, final InetAddress address) {
 		runOnUiThread(new Runnable() {
 			
 			@Override
 			public void run() {
-				serversAdapter.add(serverName);
+				serversAdapter.add(new ServerInfo(serverName, address));
 			}
 		});
 	}
@@ -177,5 +197,31 @@ public class SelectServerActivity extends Activity implements Runnable {
 				socket.close();
 			}
 		}
-	} 
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T cast(Object obj) {
+		return (T) obj;
+	}
+	
+	private static class ServerInfo {
+		
+		private String name;
+		
+		private InetAddress address;
+		
+		ServerInfo(String name, InetAddress address) {
+			this.name = name;
+			this.address = address;
+		}
+		
+		InetAddress getAddress() {
+			return address;
+		}
+		
+		@Override
+		public String toString() {
+			return name;
+		}
+	}
 }
