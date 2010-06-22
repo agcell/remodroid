@@ -57,7 +57,7 @@ import org.nn.remodroid.server.handlers.ZoomEventHandler;
 
 public class RemoDroidServer extends Thread {
 
-	public static final int SERVER_PORT = 9000;
+	public static final int SERVER_PORT = 9011;
 	public static final int BUFFER_SIZE = 5000;
 	
 	private Map<Class<? extends RemoteMessage>, MessageHandler<? extends RemoteMessage>> handlers = 
