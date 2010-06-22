@@ -29,6 +29,7 @@ import org.nn.remodroid.messages.RemoteMessage;
 import org.nn.remodroid.messages.TextEvent;
 import org.nn.remodroid.messages.VScrollEvent;
 import org.nn.remodroid.messages.ZoomEvent;
+import org.nn.remodroid.server.RemoDroidServer;
 
 import android.app.Activity;
 import android.content.Context;
@@ -56,7 +57,7 @@ public class RemoDroidActivity extends Activity implements Runnable {
     
 	private static final String CLASSTAG = RemoDroidActivity.class.getSimpleName();
 	
-	private static final int SERVER_PORT = 9000;
+	private static final int SERVER_PORT = RemoDroidServer.SERVER_PORT;
 	
 	private BlockingQueue<RemoteMessage> messages = new LinkedBlockingQueue<RemoteMessage>();
 	
