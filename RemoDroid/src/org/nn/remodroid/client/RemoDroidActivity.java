@@ -33,9 +33,13 @@ import org.nn.remodroid.server.RemoDroidServer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -169,6 +173,7 @@ public class RemoDroidActivity extends Activity implements Runnable {
 		private static final int MODE_ZOOM = 4;
 		
 		private static final int SCROLL_RATE = 50;
+		private static final int BORDER_SIZE = 5;
 		
 		private ObjectsPositionInfo verticalInfo = null;
 		private ObjectsPositionInfo horizontalInfo = null;
@@ -181,6 +186,8 @@ public class RemoDroidActivity extends Activity implements Runnable {
 		private int mode = MODE_NONE;
 		
 		private final Paint rectPaint = new Paint();
+		private final Paint backgroundPaint = new Paint();
+		private final Paint borderPaint = new Paint();
 		
 		private ObjectsPositionInfo positionInfo = null;
 		
@@ -194,6 +201,11 @@ public class RemoDroidActivity extends Activity implements Runnable {
 		private boolean drawLeftButton;
 		private boolean drawRightButton;
 		
+		private Bitmap leftTopCorner = null;
+		private Bitmap rightTopCorner = null;
+		private Bitmap leftBottomCorner = null;
+		private Bitmap rightBottomCorner = null;
+		
 		public GraphicsView(Context context) {
 			super(context);
 			setFocusable(true);
@@ -206,11 +218,61 @@ public class RemoDroidActivity extends Activity implements Runnable {
 					.decodeResource(getResources(), R.drawable.button_v));
 			horizontalInfo = new HorizontalPositionInfo(BitmapFactory
 					.decodeResource(getResources(), R.drawable.button_h));
+			
+			leftTopCorner = BitmapFactory.decodeResource(getResources(), R.drawable.background_corner);
+			displaySizeInfo(leftTopCorner);
+			rightTopCorner = rotateBitmap(leftTopCorner, 90);
+			displaySizeInfo(rightTopCorner);
+			rightBottomCorner = rotateBitmap(rightTopCorner, 90);
+			displaySizeInfo(rightBottomCorner);
+			leftBottomCorner = rotateBitmap(rightBottomCorner, 90);
+			displaySizeInfo(leftBottomCorner);
+			
+			backgroundPaint.setColor(getResources().getColor(R.color.background));
+			borderPaint.setColor(getResources().getColor(R.color.border));
 		}
 		
+		private void displaySizeInfo(Bitmap bitmap) {
+			Log.d(CLASSTAG, "### w=" + bitmap.getWidth() + "; h=" + bitmap.getHeight());
+		}
+
 		@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
+
+//			RectF rect = new RectF();
+//			rect.set(0, 0, getWidth(), getHeight());
+//			canvas.drawRoundRect(rect, 25.0f, 25.0f, backgroundPaint);
+			
+			canvas.drawBitmap(leftTopCorner, 0, 0, null);
+			canvas.drawBitmap(rightTopCorner, getWidth() - rightTopCorner.getWidth(), 0, null);
+			canvas.drawBitmap(leftBottomCorner, 0, getHeight() - leftBottomCorner.getHeight(), null);
+			canvas.drawBitmap(rightBottomCorner, getWidth() - rightBottomCorner.getWidth(), 
+					getHeight() - rightBottomCorner.getHeight(), null);
+			
+			canvas.drawRect(leftTopCorner.getWidth(), 0, 
+					getWidth() - rightTopCorner.getWidth(), BORDER_SIZE, borderPaint);
+			canvas.drawRect(leftTopCorner.getWidth(), BORDER_SIZE, getWidth() - rightTopCorner.getWidth(), 
+					leftTopCorner.getHeight(), backgroundPaint);
+
+			canvas.drawRect(leftBottomCorner.getWidth(), getHeight() - BORDER_SIZE, 
+					getWidth() - rightBottomCorner.getWidth(), getHeight(), borderPaint);
+			canvas.drawRect(leftBottomCorner.getWidth(), getHeight() - leftBottomCorner.getHeight(), 
+					getWidth() - rightBottomCorner.getWidth(), getHeight() - BORDER_SIZE,backgroundPaint);
+			
+			canvas.drawRect(0, leftTopCorner.getHeight(), BORDER_SIZE, 
+					getHeight() - leftBottomCorner.getHeight(), borderPaint);
+			canvas.drawRect(BORDER_SIZE, leftTopCorner.getHeight(), leftTopCorner.getWidth(), 
+					getHeight() - leftBottomCorner.getHeight(), backgroundPaint);
+			
+			canvas.drawRect(getWidth() - BORDER_SIZE, rightTopCorner.getHeight(), getWidth(), 
+					getHeight() - rightBottomCorner.getHeight(), borderPaint);
+			canvas.drawRect(getWidth() - rightTopCorner.getWidth(), rightTopCorner.getHeight(), 
+					getWidth() - BORDER_SIZE, getHeight() - rightBottomCorner.getHeight(), backgroundPaint);
+			
+			canvas.drawRect(leftTopCorner.getWidth(), leftTopCorner.getHeight(), 
+					getWidth() - rightBottomCorner.getWidth(), getHeight() - rightBottomCorner.getHeight(), 
+					backgroundPaint);
 			
 			if (drawLeftButton) {
 				canvas.drawBitmap(positionInfo.getButton(), positionInfo.getLeft().left, 
@@ -235,11 +297,11 @@ public class RemoDroidActivity extends Activity implements Runnable {
 		@Override
 		protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 			positionInfo = getPositionInfo();
-			if (w < h) {
-				setBackgroundResource(R.drawable.background_v);
-			} else {
-				setBackgroundResource(R.drawable.background_h);
-			}
+//			if (w < h) {
+//				setBackgroundResource(R.drawable.background_v);
+//			} else {
+//				setBackgroundResource(R.drawable.background_h);
+//			}
 			super.onSizeChanged(w, h, oldw, oldh);
 		}
 		@Override
@@ -523,6 +585,12 @@ public class RemoDroidActivity extends Activity implements Runnable {
 		private void showSoftKeyboard() {
 			InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT);
+		}
+		
+		private Bitmap rotateBitmap(Bitmap bitmap, int degrees) {
+			Matrix m = new Matrix();
+			m.postRotate(90);
+			return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, false);
 		}
 	}
 	
