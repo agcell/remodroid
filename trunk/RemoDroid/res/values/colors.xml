@@ -2,6 +2,8 @@
 
 <resources>
 	<color name="rect">#3500FFFF</color>
+	<color name="background">#BBBDC1</color>
+	<color name="border">#E6E9EC</color>
 	
 	<color name="puzzle_background">#ffe6f0ff</color>
 	<color name="puzzle_hilite">#ffffffff</color>
