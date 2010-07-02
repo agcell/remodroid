@@ -102,7 +102,7 @@ public class SelectServerActivity extends Activity implements Runnable {
 		}
 		
 		thread = null;
-		servers.clear();
+		serversAdapter.clear();
 		super.onPause();
 	}
 	
@@ -119,7 +119,7 @@ public class SelectServerActivity extends Activity implements Runnable {
 		
 		try {
 			socket = new DatagramSocket(RemoDroidServer.SERVER_PORT);
-			socket.setSoTimeout(500);
+			socket.setSoTimeout(1500);
 			
 			boolean messageSent = false;
 			while (true) {
