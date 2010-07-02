@@ -5,4 +5,7 @@
 	<dimen name="button_h_width">315px</dimen>
 	<dimen name="button_v_width">180px</dimen>
 	<dimen name="button_height">90px</dimen>
+	
+	<dimen name="background_border">5px</dimen>
+	<dimen name="button_border">2px</dimen>
 </resources>

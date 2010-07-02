@@ -197,8 +197,6 @@ public class RemoDroidActivity extends Activity implements Runnable {
 		private static final int MODE_ZOOM = 4;
 		
 		private static final int SCROLL_RATE = 50;
-		private static final int BORDER_SIZE = 5;
-		private static final int BUTTON_BORDER_SIZE = 2;
 		
 		private float startX;
 		private float startY;
@@ -242,14 +240,17 @@ public class RemoDroidActivity extends Activity implements Runnable {
 					getResources().getDimensionPixelSize(R.dimen.button_offset),
 					keyboardBitmap.getWidth(), keyboardBitmap.getHeight());
 			
+			int borderSize = getResources().getDimensionPixelSize(R.dimen.background_border);
+			int buttonBorderSize = getResources().getDimensionPixelSize(R.dimen.button_border);
+			
 			backgroundRect = new RoundRectBitmaps(getResources(), R.drawable.background_corner, 
-					R.color.background, R.color.border, BORDER_SIZE);
+					R.color.background, R.color.border, borderSize);
 			
 			buttonRect = new RoundRectBitmaps(getResources(), R.drawable.button_corner, R.color.button_background, 
-					R.color.button_border, BUTTON_BORDER_SIZE);
+					R.color.button_border, buttonBorderSize);
 			
 			clickedButtonRect = new RoundRectBitmaps(getResources(), R.drawable.button_corner_clicked, 
-					R.color.button_clicked_background, R.color.button_border, BUTTON_BORDER_SIZE);
+					R.color.button_clicked_background, R.color.button_border, buttonBorderSize);
 		}
 
 		@Override
