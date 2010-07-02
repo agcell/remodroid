@@ -9,4 +9,7 @@
 	<color name="button_border">#57595C</color>
 	<color name="button_clicked_border">#FFFFFF</color>
 	<color name="button_clicked_background">#414245</color>
+	
+	<color name="scrollbar_border">#55575A</color>
+	<color name="scrollbar_background">#808183</color>
 </resources>

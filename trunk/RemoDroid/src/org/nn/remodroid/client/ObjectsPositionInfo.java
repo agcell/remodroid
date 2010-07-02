@@ -10,18 +10,26 @@ public class ObjectsPositionInfo {
 	private final int buttonOffset;
 	private final int keyboardWidth;
 	private final int keyboardHeight;
+	private final int scrollbarWidth;
+	private final int scrollbarOffset;
+	private final int scrollbarInflateSize;
 	
 	private Rect left = new Rect();
 	private Rect right = new Rect();
 	private Rect keyboard = new Rect();
 	private Rect vScrollbar = new Rect();
+	private Rect vScrollbarImage = new Rect();
 	private Rect hScrollbar = new Rect();
 	
-	public ObjectsPositionInfo(int buttonHeight, int buttonOffset, int keyboardWidth, int keyboardHeight) {
+	public ObjectsPositionInfo(int buttonHeight, int buttonOffset, int keyboardWidth, int keyboardHeight, 
+			int scrollbarWidth, int scrollbarOffset, int scrollbarInflateSize) {
 		this.buttonHeight = buttonHeight;
 		this.buttonOffset = buttonOffset;
 		this.keyboardWidth = keyboardWidth;
 		this.keyboardHeight = keyboardHeight;
+		this.scrollbarWidth = scrollbarWidth;
+		this.scrollbarOffset = scrollbarOffset;
+		this.scrollbarInflateSize = scrollbarInflateSize;
 	}
 	
 	public Rect getLeft() {
@@ -38,6 +46,10 @@ public class ObjectsPositionInfo {
 	
 	public Rect getVScrollbar() {
 		return vScrollbar;
+	}
+	
+	public Rect getvScrollbarImage() {
+		return vScrollbarImage;
 	}
 	
 	public Rect getHScrollbar() {
@@ -57,5 +69,11 @@ public class ObjectsPositionInfo {
 		y = y + (buttonHeight - keyboardHeight) / 2;
 		x = (width - keyboardWidth) / 2;
 		keyboard.set(x, y, x + keyboardWidth, y + keyboardHeight);
+		
+		y = scrollbarOffset;
+		x = width - scrollbarOffset - scrollbarWidth;
+		vScrollbarImage.set(x, y, x + scrollbarWidth, right.top - scrollbarOffset);
+		vScrollbar.set(vScrollbarImage.left - scrollbarInflateSize, vScrollbarImage.top - scrollbarInflateSize, 
+				vScrollbarImage.right + scrollbarInflateSize, vScrollbarImage.bottom + scrollbarInflateSize);
 	}
 }
