@@ -1,7 +1,15 @@
 package org.nn.remodroid.server;
 
 import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
 import java.awt.Robot;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,6 +21,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.SwingUtilities;
 
 import org.nn.remodroid.messages.CloseCurrentAppEvent;
 import org.nn.remodroid.messages.DpadCenterEvent;
@@ -148,6 +158,40 @@ public class RemoDroidServer extends Thread {
 	}
 	
 	public static void main(String[] args) {
-		new RemoDroidServer().start();
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (SystemTray.isSupported()) {
+					final TrayIcon trayIcon;
+					
+				    SystemTray tray = SystemTray.getSystemTray();
+				    Image image = Toolkit.getDefaultToolkit().getImage("icon.png");
+
+				    ActionListener exitListener = new ActionListener() {
+				        public void actionPerformed(ActionEvent e) {
+				            System.exit(0);
+				        }
+				    };
+				    
+				    PopupMenu popup = new PopupMenu();
+				    MenuItem defaultItem = new MenuItem("Exit");
+				    defaultItem.addActionListener(exitListener);
+				    popup.add(defaultItem);
+
+				    trayIcon = new TrayIcon(image, "RemoDroid Server", popup);
+				    
+				    trayIcon.setImageAutoSize(true);
+
+				    try {
+				        tray.add(trayIcon);
+				    } catch (AWTException e) {
+				        System.err.println("TrayIcon could not be added.");
+				    }
+				}
+				
+				new RemoDroidServer().start();
+			}
+		});
 	}
 }
