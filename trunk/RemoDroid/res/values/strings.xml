@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">RemoDroid</string>
+	<string name="instructionsText"><b>\n</b><b>1.</b> Start RemoDroid Server on your computer.\n\n<b>2.</b> Select your computer from the list.\n\n\n</string>
 </resources>
  
