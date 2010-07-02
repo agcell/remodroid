@@ -63,7 +63,7 @@ public class RemoDroidActivity extends Activity implements Runnable {
 	
 	private BlockingQueue<RemoteMessage> messages = new LinkedBlockingQueue<RemoteMessage>();
 	
-	private static final boolean debug = false;
+	private static final boolean debug = true;
 	
 	private SensorManager sensorManager = null;
 	private Sensor sensor = null;
@@ -235,8 +235,6 @@ public class RemoDroidActivity extends Activity implements Runnable {
 			keyboardBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard);
 			
 			positionInfo = new ObjectsPositionInfo(getResources().getDimensionPixelSize(R.dimen.button_height), 
-					getResources().getDimensionPixelSize(R.dimen.button_h_width), 
-					getResources().getDimensionPixelSize(R.dimen.button_v_width),
 					getResources().getDimensionPixelSize(R.dimen.button_offset),
 					keyboardBitmap.getWidth(), keyboardBitmap.getHeight());
 			

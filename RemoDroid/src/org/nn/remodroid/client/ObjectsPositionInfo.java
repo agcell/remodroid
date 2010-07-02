@@ -7,8 +7,6 @@ public class ObjectsPositionInfo {
 	protected static final int SOFFSET = 30;
 	
 	private final int buttonHeight;
-	private final int buttonHWidth;
-	private final int buttonVWidth;
 	private final int buttonOffset;
 	private final int keyboardWidth;
 	private final int keyboardHeight;
@@ -19,11 +17,8 @@ public class ObjectsPositionInfo {
 	private Rect vScrollbar = new Rect();
 	private Rect hScrollbar = new Rect();
 	
-	public ObjectsPositionInfo(int buttonHeight, int buttonHWidth, int buttonVWidth, int buttonOffset, 
-			int keyboardWidth, int keyboardHeight) {
+	public ObjectsPositionInfo(int buttonHeight, int buttonOffset, int keyboardWidth, int keyboardHeight) {
 		this.buttonHeight = buttonHeight;
-		this.buttonHWidth = buttonHWidth;
-		this.buttonVWidth = buttonVWidth;
 		this.buttonOffset = buttonOffset;
 		this.keyboardWidth = keyboardWidth;
 		this.keyboardHeight = keyboardHeight;
@@ -50,10 +45,7 @@ public class ObjectsPositionInfo {
 	}
 	
 	public void update(int width, int height) {
-		int buttonWidth = buttonVWidth;
-		if (width > height) {
-			buttonWidth = buttonHWidth;
-		}
+		int buttonWidth = (width - keyboardWidth - 3 * buttonOffset) / 2;
 		
 		int x = buttonOffset;
 		int y = height - buttonHeight - buttonOffset;
