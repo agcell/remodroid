@@ -71,6 +71,8 @@ public class RemoDroidActivity extends Activity implements Runnable {
 	
 	private InetAddress serverAddress;
 	
+	private Thread messagesThread = null;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,8 +87,10 @@ public class RemoDroidActivity extends Activity implements Runnable {
         
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         registerAccelerometerListener(view);
-        
-        new Thread(this).start();
+        if (messagesThread == null) {
+	        messagesThread = new Thread(this);
+	        messagesThread.start();
+        }
     }
 
     @Override
@@ -94,6 +98,23 @@ public class RemoDroidActivity extends Activity implements Runnable {
     	if (sensor != null) {
     		sensorManager.unregisterListener(view);
     	}
+    	
+		if (messagesThread != null) {
+			try {
+				messagesThread.interrupt();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				messagesThread.join();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		messagesThread = null;
+		messages.clear();
+		
     	super.onPause();
     }
     
@@ -101,6 +122,11 @@ public class RemoDroidActivity extends Activity implements Runnable {
     protected void onResume() {
     	super.onResume();
     	registerAccelerometerListener(view);
+    	
+        if (messagesThread == null) {
+	        messagesThread = new Thread(this);
+	        messagesThread.start();
+        }
     }
     
     private void sendMessage(RemoteMessage message) {
