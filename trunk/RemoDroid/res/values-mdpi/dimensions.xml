@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resources>
+	<dimen name="button_offset">8px</dimen>
+	<dimen name="button_height">60px</dimen>
+	
+	<dimen name="background_border">3px</dimen>
+	<dimen name="button_border">1px</dimen>
+</resources>
