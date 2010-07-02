@@ -3,16 +3,14 @@ package org.nn.remodroid.server;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,6 +88,10 @@ public class RemoDroidServer extends Thread {
 		try {
 			Robot robot = new Robot();
 			socket = new DatagramSocket(SERVER_PORT);
+			
+			ConnectionHelper.sendMessage(new FindServerResponseEvent(), 
+					InetAddress.getByName("255.255.255.255"), RemoDroidServer.SERVER_PORT);
+			
 			while (true) {
 				ObjectInputStream is = null;
 				try {
@@ -127,6 +129,8 @@ public class RemoDroidServer extends Thread {
 			e.printStackTrace();
 		} catch (AWTException e) {
 			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
 		} finally {
 			if (socket != null) {
 				socket.close();
@@ -135,43 +139,8 @@ public class RemoDroidServer extends Thread {
 	}
 
 	private void sendFindServerReply(InetAddress address) {
-		sendMessage(new FindServerResponseEvent(), address, SERVER_PORT);
+		ConnectionHelper.sendMessage(new FindServerResponseEvent(), address, SERVER_PORT);
 	}
-
-	public static void sendMessage(RemoteMessage message, InetAddress address, int serverPort) {
-		DatagramSocket socket = null;
-		try {
-			socket = new DatagramSocket();
-			ObjectOutputStream os = null;
-			try {
-				ByteArrayOutputStream byteStream = new ByteArrayOutputStream(5000);
-				os = new ObjectOutputStream(new BufferedOutputStream(byteStream));
-				os.writeObject(message);
-				os.flush();
-		      
-				byte[] buffer = byteStream.toByteArray();
-				DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, serverPort);
-				socket.send(packet);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (os != null) {
-					try {
-						os.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		} catch (SocketException e) {
-			e.printStackTrace();
-		} finally {
-			if (socket != null) {
-				socket.close();
-			}
-		}
-	} 
-	
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T cast(Object obj) {
