@@ -6,6 +6,7 @@
 	<color name="border">#E6E9EC</color>
 	
 	<color name="button_background">#808183</color>
-	<color name="button_border">#FFFFFF</color>
+	<color name="button_border">#57595C</color>
+	<color name="button_clicked_border">#FFFFFF</color>
 	<color name="button_clicked_background">#414245</color>
 </resources>
