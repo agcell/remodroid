@@ -8,7 +8,7 @@
 	<dimen name="button_border">1px</dimen>
 	
 	<dimen name="scrollbar_border">1px</dimen>
-	<dimen name="scrollbar_offset">50px</dimen>
-	<dimen name="scrollbar_inflate_size">30px</dimen>
-	<dimen name="scrollbar_button_size">20px</dimen>
+	<dimen name="scrollbar_offset">30px</dimen>
+	<dimen name="scrollbar_inflate_size">25px</dimen>
+	<dimen name="scrollbar_button_size">35px</dimen>
 </resources>
