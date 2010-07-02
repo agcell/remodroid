@@ -248,7 +248,7 @@ public class RemoDroidActivity extends Activity implements Runnable {
 					R.color.button_border, buttonBorderSize);
 			
 			clickedButtonRect = new RoundRectBitmaps(getResources(), R.drawable.button_corner_clicked, 
-					R.color.button_clicked_background, R.color.button_border, buttonBorderSize);
+					R.color.button_clicked_background, R.color.button_clicked_border, buttonBorderSize);
 		}
 
 		@Override
