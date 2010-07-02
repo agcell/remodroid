@@ -1,20 +1,32 @@
 package org.nn.remodroid.client;
 
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 
-public abstract class ObjectsPositionInfo {
+public class ObjectsPositionInfo {
 
 	protected static final int SOFFSET = 30;
 	
-	private Rect left = null;
-	private Rect right = null;
-	private Rect keyboard = null;
-	private Rect vScrollbar = null;
-	private Rect hScrollbar = null;
-	private Bitmap button = null;
+	private final int buttonHeight;
+	private final int buttonHWidth;
+	private final int buttonVWidth;
+	private final int buttonOffset;
+	private final int keyboardWidth;
+	private final int keyboardHeight;
 	
-	protected ObjectsPositionInfo() {
+	private Rect left = new Rect();
+	private Rect right = new Rect();
+	private Rect keyboard = new Rect();
+	private Rect vScrollbar = new Rect();
+	private Rect hScrollbar = new Rect();
+	
+	public ObjectsPositionInfo(int buttonHeight, int buttonHWidth, int buttonVWidth, int buttonOffset, 
+			int keyboardWidth, int keyboardHeight) {
+		this.buttonHeight = buttonHeight;
+		this.buttonHWidth = buttonHWidth;
+		this.buttonVWidth = buttonVWidth;
+		this.buttonOffset = buttonOffset;
+		this.keyboardWidth = keyboardWidth;
+		this.keyboardHeight = keyboardHeight;
 	}
 	
 	public Rect getLeft() {
@@ -36,32 +48,22 @@ public abstract class ObjectsPositionInfo {
 	public Rect getHScrollbar() {
 		return hScrollbar;
 	}
-
-	public Bitmap getButton() {
-		return button;
-	}
 	
-	protected void setLeft(Rect left) {
-		this.left = left;
-	}
-
-	protected void setRight(Rect right) {
-		this.right = right;
-	}
-
-	protected void setKeyboard(Rect keyboard) {
-		this.keyboard = keyboard;
-	}
-
-	protected void setVScrollbar(Rect vScrollbar) {
-		this.vScrollbar = vScrollbar;
-	}
-
-	protected void setHScrollbar(Rect hScrollbar) {
-		this.hScrollbar = hScrollbar;
-	}
-	
-	protected void setButton(Bitmap button) {
-		this.button = button;
+	public void update(int width, int height) {
+		int buttonWidth = buttonVWidth;
+		if (width > height) {
+			buttonWidth = buttonHWidth;
+		}
+		
+		int x = buttonOffset;
+		int y = height - buttonHeight - buttonOffset;
+		left.set(x, y, x + buttonWidth, y + buttonHeight);
+		
+		x = width - buttonWidth - buttonOffset;
+		right.set(x, y, x + buttonWidth, y + buttonHeight);
+		
+		y = y + (buttonHeight - keyboardHeight) / 2;
+		x = (width - keyboardWidth) / 2;
+		keyboard.set(x, y, x + keyboardWidth, y + keyboardHeight);
 	}
 }
