@@ -561,7 +561,8 @@ public class RemoDroidActivity extends Activity implements Runnable {
 		
 		private void showSoftKeyboard() {
 			InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT);
+			//imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT);
+			imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 		}
 	}
 	
