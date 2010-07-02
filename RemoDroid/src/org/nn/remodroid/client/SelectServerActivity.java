@@ -1,12 +1,9 @@
 package org.nn.remodroid.client;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -20,8 +17,8 @@ import java.util.List;
 import org.nn.remodroid.messages.FindServerRequestEvent;
 import org.nn.remodroid.messages.FindServerResponseEvent;
 import org.nn.remodroid.messages.RemoteMessage;
+import org.nn.remodroid.server.ConnectionHelper;
 import org.nn.remodroid.server.RemoDroidServer;
-import org.nn.remodroid.client.R;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -46,6 +43,8 @@ public class SelectServerActivity extends Activity implements Runnable {
 	private ListView myListView;
 	private final List<ServerInfo> servers = Collections.synchronizedList(new ArrayList<ServerInfo>());
 	private ArrayAdapter<ServerInfo> serversAdapter;
+	
+	private boolean stopThread = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +75,19 @@ public class SelectServerActivity extends Activity implements Runnable {
 	}
 	
 	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if (thread == null) {
+	        thread = new Thread(this);
+	        thread.start();
+        }
+	}
+	
+	@Override
 	protected void onPause() {
 		System.out.println("************** onPause");
+		stopThread = true;
 		if (thread != null) {
 			try {
 				thread.interrupt();
@@ -92,6 +102,7 @@ public class SelectServerActivity extends Activity implements Runnable {
 		}
 		
 		thread = null;
+		servers.clear();
 		super.onPause();
 	}
 	
@@ -104,13 +115,24 @@ public class SelectServerActivity extends Activity implements Runnable {
 		byte[] buffer = new byte[RemoDroidServer.BUFFER_SIZE];
 		DatagramSocket socket = null;
 		
+		stopThread = false;
+		
 		try {
-			sendMessage(new FindServerRequestEvent(), 
-					InetAddress.getByName("255.255.255.255"), RemoDroidServer.SERVER_PORT);
-			
 			socket = new DatagramSocket(RemoDroidServer.SERVER_PORT);
-			socket.setSoTimeout(1500);
+			socket.setSoTimeout(500);
+			
+			boolean messageSent = false;
 			while (true) {
+				if (stopThread) {
+					break;
+				}
+				
+				if (!messageSent) {
+					ConnectionHelper.sendMessage(new FindServerRequestEvent(), 
+							InetAddress.getByName("255.255.255.255"), RemoDroidServer.SERVER_PORT);
+					messageSent = true;
+				}
+				
 				ObjectInputStream is = null;
 				try {
 					final DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -126,7 +148,6 @@ public class SelectServerActivity extends Activity implements Runnable {
 					}
 				} catch (SocketTimeoutException e) {
 					System.out.println("************** SocketTimeoutException");
-					break;
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {
@@ -162,41 +183,6 @@ public class SelectServerActivity extends Activity implements Runnable {
 				serversAdapter.add(new ServerInfo(serverName, address));
 			}
 		});
-	}
-	
-	public static void sendMessage(RemoteMessage message, InetAddress address, int serverPort) {
-		DatagramSocket socket = null;
-		try {
-			socket = new DatagramSocket();
-			socket.setBroadcast(true);
-			ObjectOutputStream os = null;
-			try {
-				ByteArrayOutputStream byteStream = new ByteArrayOutputStream(5000);
-				os = new ObjectOutputStream(new BufferedOutputStream(byteStream));
-				os.writeObject(message);
-				os.flush();
-		      
-				byte[] buffer = byteStream.toByteArray();
-				DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, serverPort);
-				socket.send(packet);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (os != null) {
-					try {
-						os.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		} catch (SocketException e) {
-			e.printStackTrace();
-		} finally {
-			if (socket != null) {
-				socket.close();
-			}
-		}
 	}
 	
 	@SuppressWarnings("unchecked")
