@@ -63,7 +63,7 @@ public class RemoDroidActivity extends Activity implements Runnable {
 	
 	private BlockingQueue<RemoteMessage> messages = new LinkedBlockingQueue<RemoteMessage>();
 	
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 	
 	private SensorManager sensorManager = null;
 	private Sensor sensor = null;
@@ -224,6 +224,8 @@ public class RemoDroidActivity extends Activity implements Runnable {
 		private RoundRectBitmaps buttonRect;
 		private RoundRectBitmaps clickedButtonRect;
 		
+		private ScrollbarBitmaps scrollbarRect;
+		
 		public GraphicsView(Context context) {
 			super(context);
 			setFocusable(true);
@@ -233,11 +235,7 @@ public class RemoDroidActivity extends Activity implements Runnable {
 			rectPaint.setAlpha(128);
 
 			keyboardBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard);
-			
-			positionInfo = new ObjectsPositionInfo(getResources().getDimensionPixelSize(R.dimen.button_height), 
-					getResources().getDimensionPixelSize(R.dimen.button_offset),
-					keyboardBitmap.getWidth(), keyboardBitmap.getHeight());
-			
+						
 			int borderSize = getResources().getDimensionPixelSize(R.dimen.background_border);
 			int buttonBorderSize = getResources().getDimensionPixelSize(R.dimen.button_border);
 			
@@ -249,6 +247,16 @@ public class RemoDroidActivity extends Activity implements Runnable {
 			
 			clickedButtonRect = new RoundRectBitmaps(getResources(), R.drawable.button_corner_clicked, 
 					R.color.button_clicked_background, R.color.button_clicked_border, buttonBorderSize);
+			
+			scrollbarRect = new ScrollbarBitmaps(getResources(), R.drawable.scroll_margin, 
+					R.color.scrollbar_background, R.color.scrollbar_border, R.dimen.scrollbar_border, 
+					R.dimen.scrollbar_button_size);
+			
+			positionInfo = new ObjectsPositionInfo(getResources().getDimensionPixelSize(R.dimen.button_height), 
+					getResources().getDimensionPixelSize(R.dimen.button_offset), 
+					keyboardBitmap.getWidth(), keyboardBitmap.getHeight(), scrollbarRect.getWidth(), 
+					getResources().getDimensionPixelSize(R.dimen.scrollbar_offset), 
+					getResources().getDimensionPixelSize(R.dimen.scrollbar_inflate_size));
 		}
 
 		@Override
@@ -261,6 +269,7 @@ public class RemoDroidActivity extends Activity implements Runnable {
 			drawButton(canvas, positionInfo.getRight(), drawRightButton);
 			
 			drawKeyboard(canvas);
+			drawScrollbar(canvas);
 			
 			if (debug) {
 				canvas.drawRect(positionInfo.getLeft(), rectPaint);
@@ -282,6 +291,11 @@ public class RemoDroidActivity extends Activity implements Runnable {
 		private void drawKeyboard(Canvas canvas) {
 			Rect keyboardRect = positionInfo.getKeyboard();
 			canvas.drawBitmap(keyboardBitmap, keyboardRect.left, keyboardRect.top, null);
+		}
+		
+		private void drawScrollbar(Canvas canvas) {
+			Rect scrollbar = positionInfo.getvScrollbarImage();
+			scrollbarRect.draw(canvas, scrollbar.left , scrollbar.top, scrollbar.width(), scrollbar.height());
 		}
 		
 		@Override
