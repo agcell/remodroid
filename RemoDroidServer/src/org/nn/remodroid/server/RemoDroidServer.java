@@ -166,7 +166,8 @@ public class RemoDroidServer extends Thread {
 					final TrayIcon trayIcon;
 					
 				    SystemTray tray = SystemTray.getSystemTray();
-				    Image image = Toolkit.getDefaultToolkit().getImage("/home/nemesis/work/android/RemoDroidServer/icon.png");
+				    
+				    Image image = Toolkit.getDefaultToolkit().getImage(RemoDroidServer.class.getResource("/icon.png"));
 
 				    ActionListener exitListener = new ActionListener() {
 				        public void actionPerformed(ActionEvent e) {
